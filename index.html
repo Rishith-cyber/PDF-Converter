@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF Converter</title>
+<meta name="description" content="Free online PDF converter tools. Convert images to PDF, merge PDFs, split PDFs, convert PDF pages to JPG, and check PDF information in one page.">
+
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f5f6fa;
+color:#222;
+}
+
+header{
+background:#e5322d;
+color:white;
+padding:30px 20px;
+text-align:center;
+}
+
+header h1{
+font-size:42px;
+}
+
+header p{
+margin-top:8px;
+font-size:18px;
+}
+
+.container{
+max-width:1150px;
+margin:auto;
+padding:25px;
+}
+
+.main-box{
+background:white;
+padding:30px;
+border-radius:16px;
+box-shadow:0 4px 15px rgba(0,0,0,0.12);
+text-align:center;
+margin-bottom:30px;
+}
+
+.main-box h2{
+font-size:30px;
+margin-bottom:10px;
+}
+
+.upload-area{
+border:2px dashed #e5322d;
+background:#fff5f5;
+padding:30px;
+border-radius:14px;
+margin-top:20px;
+}
+
+input,select{
+padding:12px;
+margin:10px;
+font-size:16px;
+border:1px solid #ccc;
+border-radius:6px;
+}
+
+button{
+background:#e5322d;
+color:white;
+border:none;
+padding:12px 20px;
+margin:8px;
+border-radius:7px;
+font-size:16px;
+cursor:pointer;
+}
+
+button:hover{
+background:#c91f1a;
+}
+
+.tools{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+gap:20px;
+}
+
+.tool-card{
+background:white;
+padding:25px;
+border-radius:14px;
+box-shadow:0 3px 12px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+.tool-card h3{
+color:#e5322d;
+margin-bottom:10px;
+}
+
+.result{
+background:white;
+padding:25px;
+border-radius:14px;
+box-shadow:0 3px 12px rgba(0,0,0,0.1);
+margin-top:30px;
+}
+
+.result h2{
+color:#e5322d;
+margin-bottom:10px;
+}
+
+.download-link{
+display:inline-block;
+background:#16a34a;
+color:white;
+padding:12px 18px;
+border-radius:7px;
+text-decoration:none;
+margin-top:15px;
+}
+
+.info{
+background:white;
+padding:25px;
+border-radius:14px;
+margin-top:30px;
+line-height:1.7;
+box-shadow:0 3px 12px rgba(0,0,0,0.1);
+}
+
+footer{
+background:#222;
+color:white;
+text-align:center;
+padding:20px;
+margin-top:30px;
+}
+
+@media(max-width:600px){
+header h1{
+font-size:30px;
+}
+
+.main-box h2{
+font-size:24px;
+}
+
+button{
+width:90%;
+}
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+<h1>PDF Converter</h1>
+<p>Free Online PDF Tools in One Page</p>
+</header>
+
+<div class="container">
+
+<section class="main-box">
+<h2>Upload Files and Choose a PDF Tool</h2>
+<p>All tools work directly in your browser.</p>
+
+<div class="upload-area">
+<input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png">
+<br>
+
+<label>Split Pages:</label> <input type="text" id="pageRange" placeholder="Example: 1-3 or 2">
+
+<br>
+
+<button onclick="imageToPdf()">Image to PDF</button> <button onclick="mergePdf()">Merge PDF</button> <button onclick="splitPdf()">Split PDF</button> <button onclick="pdfToJpg()">PDF to JPG</button> <button onclick="pdfInfo()">PDF Info</button> <button onclick="clearResult()">Clear</button>
+
+</div>
+</section>
+
+<section class="tools">
+
+<div class="tool-card">
+<h3>Image to PDF</h3>
+<p>Convert JPG or PNG images into one PDF file.</p>
+<button onclick="imageToPdf()">Use Tool</button>
+</div>
+
+<div class="tool-card">
+<h3>Merge PDF</h3>
+<p>Combine multiple PDF files into one PDF.</p>
+<button onclick="mergePdf()">Use Tool</button>
+</div>
+
+<div class="tool-card">
+<h3>Split PDF</h3>
+<p>Extract selected pages from a PDF file.</p>
+<button onclick="splitPdf()">Use Tool</button>
+</div>
+
+<div class="tool-card">
+<h3>PDF to JPG</h3>
+<p>Convert the first page of PDF into JPG image.</p>
+<button onclick="pdfToJpg()">Use Tool</button>
+</div>
+
+<div class="tool-card">
+<h3>PDF Info</h3>
+<p>Check file name, file size and number of pages.</p>
+<button onclick="pdfInfo()">Use Tool</button>
+</div>
+
+</section>
+
+<div class="result" id="resultBox">
+<h2>Result</h2>
+<p>Your output will appear here.</p>
+</div>
+
+<section class="info">
+<h2>About PDF Converter</h2>
+<p>
+PDF Converter is a simple free online PDF tools website. You can convert images to PDF, merge PDF files, split selected PDF pages, convert PDF pages to JPG, and check PDF file information.
+</p>
+<p>
+This website works in one single page using browser JavaScript. Your files are processed in your browser and are not uploaded to a server.
+</p>
+</section>
+
+</div>
+
+<footer>
+<p>© 2026 PDF Converter. All Rights Reserved.</p>
+</footer>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+function showResult(html){
+document.getElementById("resultBox").innerHTML =
+"<h2>Result</h2>" + html;
+}
+
+function clearResult(){
+document.getElementById("resultBox").innerHTML =
+"<h2>Result</h2><p>Your output will appear here.</p>";
+document.getElementById("fileInput").value = "";
+}
+
+function getFiles(){
+let files = document.getElementById("fileInput").files;
+if(files.length === 0){
+showResult("<p>Please upload file first.</p>");
+return null;
+}
+return files;
+}
+
+function downloadBlob(blob,fileName){
+let url = URL.createObjectURL(blob);
+showResult(
+"<p>File created successfully.</p>" +
+"<a class='download-link' href='" + url + "' download='" + fileName + "'>Download " + fileName + "</a>"
+);
+}
+
+async function imageToPdf(){
+let files = getFiles();
+if(!files) return;
+
+let imageFiles = Array.from(files).filter(file =>
+file.type === "image/jpeg" || file.type === "image/png"
+);
+
+if(imageFiles.length === 0){
+showResult("<p>Please upload JPG or PNG images.</p>");
+return;
+}
+
+const { jsPDF } = window.jspdf;
+let pdf = new jsPDF();
+
+for(let i=0;i<imageFiles.length;i++){
+let file = imageFiles[i];
+let imgData = await readFileAsDataURL(file);
+
+let img = new Image();
+img.src = imgData;
+
+await new Promise(resolve => {
+img.onload = resolve;
+});
+
+let pageWidth = pdf.internal.pageSize.getWidth();
+let pageHeight = pdf.internal.pageSize.getHeight();
+
+let imgWidth = pageWidth - 20;
+let imgHeight = (img.height * imgWidth) / img.width;
+
+if(imgHeight > pageHeight - 20){
+imgHeight = pageHeight - 20;
+imgWidth = (img.width * imgHeight) / img.height;
+}
+
+if(i > 0){
+pdf.addPage();
+}
+
+let x = (pageWidth - imgWidth) / 2;
+let y = 10;
+
+pdf.addImage(imgData, "JPEG", x, y, imgWidth, imgHeight);
+}
+
+let pdfBlob = pdf.output("blob");
+downloadBlob(pdfBlob,"images-to-pdf.pdf");
+}
+
+async function mergePdf(){
+let files = getFiles();
+if(!files) return;
+
+let pdfFiles = Array.from(files).filter(file =>
+file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")
+);
+
+if(pdfFiles.length < 2){
+showResult("<p>Please upload at least 2 PDF files to merge.</p>");
+return;
+}
+
+const mergedPdf = await PDFLib.PDFDocument.create();
+
+for(let file of pdfFiles){
+let bytes = await file.arrayBuffer();
+let pdf = await PDFLib.PDFDocument.load(bytes);
+let copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+
+copiedPages.forEach(page => mergedPdf.addPage(page));
+}
+
+let mergedBytes = await mergedPdf.save();
+let blob = new Blob([mergedBytes],{type:"application/pdf"});
+downloadBlob(blob,"merged.pdf");
+}
+
+async function splitPdf(){
+let files = getFiles();
+if(!files) return;
+
+let file = Array.from(files).find(file =>
+file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")
+);
+
+if(!file){
+showResult("<p>Please upload one PDF file.</p>");
+return;
+}
+
+let range = document.getElementById("pageRange").value.trim();
+
+if(range === ""){
+showResult("<p>Please enter page range. Example: 1-3 or 2</p>");
+return;
+}
+
+let bytes = await file.arrayBuffer();
+let pdf = await PDFLib.PDFDocument.load(bytes);
+let totalPages = pdf.getPageCount();
+
+let pagesToExtract = parseRange(range,totalPages);
+
+if(pagesToExtract.length === 0){
+showResult("<p>Invalid page range.</p>");
+return;
+}
+
+let newPdf = await PDFLib.PDFDocument.create();
+let copiedPages = await newPdf.copyPages(pdf,pagesToExtract);
+
+copiedPages.forEach(page => newPdf.addPage(page));
+
+let newBytes = await newPdf.save();
+let blob = new Blob([newBytes],{type:"application/pdf"});
+downloadBlob(blob,"split.pdf");
+}
+
+function parseRange(range,totalPages){
+let pages = [];
+
+if(range.includes("-")){
+let parts = range.split("-");
+let start = parseInt(parts[0]);
+let end = parseInt(parts[1]);
+
+if(isNaN(start) || isNaN(end)) return [];
+if(start < 1 || end > totalPages || start > end) return [];
+
+for(let i=start;i<=end;i++){
+pages.push(i-1);
+}
+}
+else{
+let page = parseInt(range);
+if(isNaN(page) || page < 1 || page > totalPages) return [];
+pages.push(page-1);
+}
+
+return pages;
+}
+
+async function pdfToJpg(){
+let files = getFiles();
+if(!files) return;
+
+let file = Array.from(files).find(file =>
+file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")
+);
+
+if(!file){
+showResult("<p>Please upload one PDF file.</p>");
+return;
+}
+
+let arrayBuffer = await file.arrayBuffer();
+let pdf = await pdfjsLib.getDocument({data:arrayBuffer}).promise;
+let page = await pdf.getPage(1);
+
+let viewport = page.getViewport({scale:2});
+let canvas = document.createElement("canvas");
+let context = canvas.getContext("2d");
+
+canvas.width = viewport.width;
+canvas.height = viewport.height;
+
+await page.render({
+canvasContext:context,
+viewport:viewport
+}).promise;
+
+canvas.toBlob(function(blob){
+downloadBlob(blob,"pdf-page.jpg");
+},"image/jpeg",0.95);
+}
+
+async function pdfInfo(){
+let files = getFiles();
+if(!files) return;
+
+let info = "";
+
+for(let file of files){
+let sizeKB = (file.size / 1024).toFixed(2);
+info += "<p><strong>File:</strong> " + file.name + "<br>";
+info += "<strong>Size:</strong> " + sizeKB + " KB<br>";
+
+if(file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")){
+try{
+let bytes = await file.arrayBuffer();
+let pdf = await PDFLib.PDFDocument.load(bytes);
+info += "<strong>Pages:</strong> " + pdf.getPageCount() + "</p>";
+}
+catch{
+info += "<strong>Pages:</strong> Unable to read PDF</p>";
+}
+}
+else{
+info += "<strong>Type:</strong> Image file</p>";
+}
+}
+
+showResult(info);
+}
+
+function readFileAsDataURL(file){
+return new Promise((resolve,reject)=>{
+let reader = new FileReader();
+reader.onload = () => resolve(reader.result);
+reader.onerror = reject;
+reader.readAsDataURL(file);
+});
+}
+</script>
+
+</body>
+</html>
